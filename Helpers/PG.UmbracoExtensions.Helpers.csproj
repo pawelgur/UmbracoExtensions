@@ -71,6 +71,7 @@
     <Compile Include="src\ImageHelpers.cs" />
     <Compile Include="src\MailHelper.cs" />
     <Compile Include="src\SortingHelper.cs" />
+    <Compile Include="src\TagHelpers.cs" />
     <Compile Include="src\TemplateHelpers.cs" />
     <Compile Include="src\UmbracoHelperExtensions.cs" />
     <Compile Include="src\UmbracoNodeHelpers.cs" />
