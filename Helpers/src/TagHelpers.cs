@@ -18,13 +18,14 @@ namespace PG.UmbracoExtensions.Helpers
     {
         /// <summary>
         /// Returns related by tag nodes.
-        /// Sorted by score: more tags in common - bigger score. Same score item order randomized
+        /// Sorted by score: more tags in common - bigger score. Same score item order is randomized. 
         /// </summary>
         /// <param name="node"></param>
         /// <param name="limit"></param>
+        /// <param name="doctypeAlias">filter by document type</param>
         /// <param name="fieldAlias"></param>
         /// <returns></returns>
-        public static IEnumerable<IPublishedContent> GetRelatedPosts(this IPublishedContent node, int limit = 10, string fieldAlias = "tags")
+        public static IEnumerable<IPublishedContent> GetRelatedPosts(this IPublishedContent node, int limit = 10, string doctypeAlias = "", string fieldAlias = "tags")
         {
             var result = new List<IPublishedContent>();
 
@@ -39,28 +40,31 @@ namespace PG.UmbracoExtensions.Helpers
                 //fill scoredList
                 foreach (var post in relatedPosts)
                 {
-                    var relatedNode = UmbracoContext.Current.ContentCache.GetById(post.Id);
-
-                    //calculate score    
-                    var postTags = Tag.GetTags(relatedNode.Id);
-
-                    var commonTagCount = 0;
-                    foreach (var tag in tags)
+                    if ((!String.IsNullOrEmpty(doctypeAlias) && post.ContentType.Text == doctypeAlias) || String.IsNullOrEmpty(doctypeAlias))
                     {
-                        if (postTags.FirstOrDefault(x => x.TagCaption == tag) != null)
+                        var relatedNode = UmbracoContext.Current.ContentCache.GetById(post.Id);
+
+                        //calculate score    
+                        var postTags = Tag.GetTags(relatedNode.Id);
+
+                        var commonTagCount = 0;
+                        foreach (var tag in tags)
                         {
-                            commonTagCount++;
+                            if (postTags.FirstOrDefault(x => x.TagCaption == tag) != null)
+                            {
+                                commonTagCount++;
+                            }
                         }
+
+
+                        var list = scoredList.ContainsKey(commonTagCount)
+                            ? scoredList[commonTagCount]
+                            : new List<IPublishedContent>();
+
+                        list.Add(relatedNode);
+
+                        scoredList[commonTagCount] = list;
                     }
-
-
-                    var list = scoredList.ContainsKey(commonTagCount)
-                        ? scoredList[commonTagCount]
-                        : new List<IPublishedContent>();
-
-                    list.Add(relatedNode);
-
-                    scoredList[commonTagCount] = list;
                 }
 
                 //fill results
