@@ -18,48 +18,59 @@ namespace PG.UmbracoExtensions.Helpers
     /// </summary>
     public static class MailHelper
     {
+        /// <summary>
+        /// Send email using template
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="templateUrl">template url relative to web root</param>
+        /// <param name="from"></param>
+        /// <param name="recipients"></param>
+        /// <param name="templateData"></param>
+        /// <returns></returns>
         public static bool SendMailTemplate(String subject, String templateUrl, String from, IEnumerable<User> recipients, Dictionary<String, String> templateData)
         {
-            String content = "";
-
-            try
+            var content = GetTemplateContent(templateUrl, templateData);
+            if (!String.IsNullOrEmpty(content))
             {
-                String filePath = HttpContext.Current.Server.MapPath(templateUrl);
-                content = System.IO.File.ReadAllText(filePath);
-                if (!String.IsNullOrEmpty(content))
-                {
-                    foreach (String parameter in templateData.Keys)
-                    {
-                        content = content.Replace("$$" + parameter + "$$", templateData[parameter]);
-                    }
-                    content = Regex.Replace(content, @"\$\$(.*?)\$\$", "");
-                    return SendMail(subject, content, from, recipients);
-                }
-            }
-            catch (FileNotFoundException ex)
-            {
-                LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, String.Format("Error creating email, template not found. Subject: {0}, Template url:{1} ", subject, templateUrl), ex);
+                return SendMail(subject, content, from, recipients);
             }
 
             return false;
         }
 
-        public static bool SendMail(String subject, String content, String from, IEnumerable<User> recipients)
+        /// <summary>
+        /// Send email using template
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="templateUrl">template url relative to web root</param>
+        /// <param name="from"></param>
+        /// <param name="recipients">comma seperated emails</param>
+        /// <param name="templateData"></param>
+        /// <returns></returns>
+        public static bool SendMailTemplate(String subject, String templateUrl, String from, string recipients, Dictionary<String, String> templateData)
         {
-            List<String> recipientsStrings = new List<string>();
-            if (recipients != null)
+            var content = GetTemplateContent(templateUrl, templateData);
+            if (!String.IsNullOrEmpty(content))
             {
-                foreach (var recipient in recipients)
-                {
-                    if (!String.IsNullOrEmpty(recipient.Email))
-                    {
-                        recipientsStrings.Add(recipient.Email);
-                    }
-                }
+                return SendMail(subject, content, from, recipients);
             }
 
+            return false;
+        }
+
+
+        public static bool SendMail(String subject, String content, String from, IEnumerable<User> recipients)
+        {
+            var recipientsStrings = GetEmailList(recipients);
             return SendMail(subject, content, from, recipientsStrings);
         }
+
+        public static bool SendMail(String subject, String content, String from, string recipients)
+        {
+            var recipientsStrings = GetEmailList(recipients);
+            return SendMail(subject, content, from, recipientsStrings);
+        }
+
 
 
         public static bool SendMail(String subject, String content, String from, IEnumerable<String> recipients, String replyTo = null)
@@ -131,5 +142,71 @@ namespace PG.UmbracoExtensions.Helpers
 
             return result;
         }
+
+
+
+
+        #region HelperMethods
+
+        static string GetTemplateContent(String templateUrl, Dictionary<String, String> templateData)
+        {
+            string content = "";
+            
+            try
+            {
+                String filePath = HttpContext.Current.Server.MapPath(templateUrl);
+                content = System.IO.File.ReadAllText(filePath);
+                if (!String.IsNullOrEmpty(content))
+                {
+                    foreach (String parameter in templateData.Keys)
+                    {
+                        content = content.Replace("$$" + parameter + "$$", templateData[parameter]);
+                    }
+                    content = Regex.Replace(content, @"\$\$(.*?)\$\$", "");
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                LogHelper.Error(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, String.Format("Error creating email, template not found. Template url:{0} ", templateUrl), ex);
+            }
+
+            return content;
+
+        }
+
+        static IEnumerable<string> GetEmailList(IEnumerable<User> users)
+        {
+            List<String> recipientsStrings = new List<string>();
+            if (users != null)
+            {
+                foreach (var user in users)
+                {
+                    if (!String.IsNullOrEmpty(user.Email))
+                    {
+                        recipientsStrings.Add(user.Email);
+                    }
+                }
+            }
+
+            return recipientsStrings;
+        }
+
+        static IEnumerable<string> GetEmailList(string recipientsString)
+        {
+            List<String> emails = new List<string>();
+
+            if (!String.IsNullOrEmpty(recipientsString))
+            {
+                var parts = recipientsString.Split(new string[] {","}, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var email in parts)
+                {
+                    emails.Add(email.Trim());
+                }
+            }
+
+            return emails;
+        }
+
+        #endregion
     }
 }
