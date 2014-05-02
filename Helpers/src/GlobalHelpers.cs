@@ -1,4 +1,5 @@
-﻿using System.Web.Caching;
+﻿using System.Collections;
+using System.Web.Caching;
 using System.Xml;
 using Umbraco;
 using Umbraco.Core.Models;
@@ -271,18 +272,15 @@ namespace PG.UmbracoExtensions.Helpers
         /// <summary>
         /// gets posts for specified page
         /// </summary>
-        /// <param name="postsForPager"></param>
-        /// <param name="pageNr"></param>
-        /// <param name="postsPerPage"></param>
-        /// <returns></returns>
-        public static IEnumerable<IPublishedContent> GetPostsForPage(this IEnumerable<IPublishedContent> postsForPager, int pageNr, int postsPerPage)
+        public static IEnumerable<T> GetPostsForPage<T>(this IEnumerable<T> postsForPager, int pageNr, int postsPerPage)
         {
-            IEnumerable<IPublishedContent> pagePosts = postsForPager;
-
+            IEnumerable<T> pagePosts = postsForPager;
+            
             int startIndex = (pageNr - 1) * postsPerPage;
 
             return pagePosts.Skip(startIndex).Take(postsPerPage);
         }
+
 
         /// <summary>
         /// Gets page number from request url parameters ("p" by default). Returns 1 if not set.
