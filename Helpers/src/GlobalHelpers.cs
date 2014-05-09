@@ -257,7 +257,7 @@ namespace PG.UmbracoExtensions.Helpers
                 result = UmbracoContext.Current.ContentCache.GetAtRoot()
                     .FirstOrDefault(x =>
                         contentTypeService.GetContentType(x.DocumentTypeId)
-                        .CompositionPropertyTypes
+                        .ContentTypeComposition
                         .FirstOrDefault(y => 
                             y.Alias == "Homepage") != null
                         ||
