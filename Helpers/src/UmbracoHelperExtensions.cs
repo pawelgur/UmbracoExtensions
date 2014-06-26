@@ -123,12 +123,6 @@ namespace PG.UmbracoExtensions.Helpers
             return UmbracoNodeHelpers.GetMultiPickerUrl(urlPickerValue);
         }
 
-       
-        public static IEnumerable<umbraco.BusinessLogic.User> GetSelectedUsers(this IPublishedContent node, String propertyAlias)
-        {
-            return UmbracoNodeHelpers.GetSelectedUsers(node, propertyAlias);
-        }
-
         public static bool IsCategory(this IPublishedContent node)
         {
             return UmbracoNodeHelpers.IsCategory(node);

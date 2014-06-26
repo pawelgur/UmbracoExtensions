@@ -32,7 +32,6 @@ namespace PG.UmbracoExtensions.Helpers
         /// <param name="post"></param>
         /// <param name="cropName"></param>
         /// <param name="cropThumb">use thumbnail crop if set to true</param>
-        /// <param name="useDefaultThumb">use default image if thumb is not found</param>
         /// <returns>thumbnail url</returns>
         public static String GetThumbnailUrl(IPublishedContent post, String cropName = "", bool cropThumb = false)
         {
@@ -107,8 +106,8 @@ namespace PG.UmbracoExtensions.Helpers
         /// Gets crop if cropname specified
         /// </summary>
         /// <param name="post"></param>
-        /// <param name="umbracoHelper"></param>
         /// <param name="cropName"></param>
+        /// <param name="fieldAlias"></param>
         /// <returns></returns>
         public static String GetImageUrl(IPublishedContent post, String cropName = "", String fieldAlias = "image")
         {
@@ -261,6 +260,7 @@ namespace PG.UmbracoExtensions.Helpers
         /// </summary>
         /// <param name="post"></param>
         /// <param name="cropName"></param>
+        /// <param name="fieldAlias"></param>
         /// <returns></returns>
         public static IEnumerable<String> GetImagesUrl(IPublishedContent post, String cropName = "", String fieldAlias = "images")
         {

@@ -4,18 +4,19 @@ using uComponents.DataTypes.UrlPicker.Dto;
 using Umbraco;
 using Umbraco.Core.Models;
 using Umbraco.Core;
+using Umbraco.Core.Models.Membership;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using umbraco;
 using System.Text.RegularExpressions;
 using System.Web;
 using Umbraco.Core.Logging;
-using umbraco.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
 using System.Linq;
+using User = umbraco.BusinessLogic.User;
 
 namespace PG.UmbracoExtensions.Helpers
 {
@@ -236,16 +237,16 @@ namespace PG.UmbracoExtensions.Helpers
         /// <param name="node"></param>
         /// <param name="propertyAlias"></param>
         /// <returns></returns>
-        public static IEnumerable<User> GetSelectedUsers(IPublishedContent node, String propertyAlias)
+        public static IEnumerable<IUser> GetSelectedUsers(this IPublishedContent node, String propertyAlias)
         {
-            List<User> selectedUsers = new List<User>();
+            List<IUser> selectedUsers = new List<IUser>();
 
             if (node != null && !String.IsNullOrEmpty(propertyAlias) && node.HasProperty(propertyAlias) && node.HasValue(propertyAlias))
             {
                 var userIds = node.GetPropertyValue<String>(propertyAlias).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var selectedUserId in userIds)
                 {
-                    User user = User.GetUser(Int32.Parse(selectedUserId));
+                    var user = ApplicationContext.Current.Services.UserService.GetUserById(Int32.Parse(selectedUserId));
                     if (user != null)
                     {
                         selectedUsers.Add(user);

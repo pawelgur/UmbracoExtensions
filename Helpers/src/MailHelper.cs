@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
-using umbraco.BusinessLogic;
 using Umbraco.Core.Logging;
 using System.IO;
 using System.Text.RegularExpressions;
 using Umbraco.Core.Models;
+using Umbraco.Core.Models.Membership;
 using Umbraco.Web;
 using Umbraco.Web.PublishedCache;
+using User = umbraco.BusinessLogic.User;
 
 namespace PG.UmbracoExtensions.Helpers
 {
@@ -27,7 +28,7 @@ namespace PG.UmbracoExtensions.Helpers
         /// <param name="recipients"></param>
         /// <param name="templateData"></param>
         /// <returns></returns>
-        public static bool SendMailTemplate(String subject, String templateUrl, String from, IEnumerable<User> recipients, Dictionary<String, String> templateData)
+        public static bool SendMailTemplate(String subject, String templateUrl, String from, IEnumerable<IUser> recipients, Dictionary<String, String> templateData)
         {
             var content = GetTemplateContent(templateUrl, templateData);
             if (!String.IsNullOrEmpty(content))
@@ -59,7 +60,7 @@ namespace PG.UmbracoExtensions.Helpers
         }
 
 
-        public static bool SendMail(String subject, String content, String from, IEnumerable<User> recipients)
+        public static bool SendMail(String subject, String content, String from, IEnumerable<IUser> recipients)
         {
             var recipientsStrings = GetEmailList(recipients);
             return SendMail(subject, content, from, recipientsStrings);
@@ -120,9 +121,9 @@ namespace PG.UmbracoExtensions.Helpers
         /// </summary>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static IEnumerable<umbraco.BusinessLogic.User> GetEmailRecipients(string fieldName)
+        public static IEnumerable<IUser> GetEmailRecipients(string fieldName)
         {
-            IEnumerable<umbraco.BusinessLogic.User> result = new List<umbraco.BusinessLogic.User>();
+            IEnumerable<IUser> result = new List<IUser>();
 
             var UmbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 
@@ -174,7 +175,7 @@ namespace PG.UmbracoExtensions.Helpers
 
         }
 
-        static IEnumerable<string> GetEmailList(IEnumerable<User> users)
+        static IEnumerable<string> GetEmailList(IEnumerable<IUser> users)
         {
             List<String> recipientsStrings = new List<string>();
             if (users != null)
