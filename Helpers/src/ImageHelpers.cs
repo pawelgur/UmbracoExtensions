@@ -27,7 +27,8 @@ namespace PG.UmbracoExtensions.Helpers
         /// 
         ///     Priority: 1.Thumbnail 2.Image 3.Default site thumbnail
         /// 
-        /// TODO: checking for crops and creating files from coordinates, get solution to helper problem (use services)
+        /// TODO: rewrite for v7 - crops, better Value Converters implementation, etc.
+        /// TODO: checking for crops and creating files from coordinates
         /// </summary>
         /// <param name="post"></param>
         /// <param name="cropName"></param>
@@ -41,12 +42,12 @@ namespace PG.UmbracoExtensions.Helpers
 
             try
             {
-                var thumbnailID = post.GetPropertyValue("thumbnail");
-                if (thumbnailID == null || thumbnailID == String.Empty)
+                var thumbnailID = GetIdStr(post, "thumbnail");
+                if (string.IsNullOrEmpty(thumbnailID))
                 {
                     //no thumbnail
-                    var pictureID = post.GetPropertyValue("image");
-                    if (pictureID != String.Empty && pictureID != null)
+                    var pictureID = GetIdStr(post, "image");
+                    if (!string.IsNullOrEmpty(pictureID))
                     {
                         var picture = umbracoHelper.Media(pictureID);
                         if (cropName != "")
@@ -104,6 +105,8 @@ namespace PG.UmbracoExtensions.Helpers
         /// Gets main image url.
         /// 
         /// Gets crop if cropname specified
+        /// 
+        /// TODO: rewrite for v7 - crops, better Value Converters implementation, etc.
         /// </summary>
         /// <param name="post"></param>
         /// <param name="cropName"></param>
@@ -117,12 +120,11 @@ namespace PG.UmbracoExtensions.Helpers
 
             try
             {
-                var pictureID = post.GetPropertyValue(fieldAlias);
+                var pictureID = GetIdStr(post, "image");
                 
-
-                if (pictureID != String.Empty && pictureID != null)
+                if (!string.IsNullOrEmpty(pictureID))
                 {
-                    int id = Int32.Parse(pictureID.ToString());
+                    int id = Int32.Parse(pictureID);
                     result = GetImageUrl(id, cropName);
                 }
 
@@ -138,6 +140,32 @@ namespace PG.UmbracoExtensions.Helpers
             return result;
         }
 
+            /// <summary>
+            /// WORKAROUND for "Umbraco Core Property Value Converters" package (returns IPublishedContent for media picker)
+            /// TODO: delete this
+            /// </summary>
+            /// <param name="node"></param>
+            /// <param name="propertyAlias"></param>
+            /// <returns></returns>
+            private static string GetIdStr(IPublishedContent node, string propertyAlias)
+            {
+                var result = "";
+            
+                var propertyValue = node.GetPropertyValue(propertyAlias);
+                if (propertyValue != null)
+                {
+                    if (propertyValue is IPublishedContent)
+                    {
+                        result = ((IPublishedContent) propertyValue).Id.ToString();
+                    }
+                    else
+                    {
+                        result = propertyValue.ToString();
+                    }
+                }
+
+                return result;
+            }
 
         /// <summary>
         /// Gets the specified crop from ImageCropper string value
