@@ -1,6 +1,4 @@
-﻿using uComponents.DataTypes.MultiUrlPicker.Dto;
-using uComponents.DataTypes.UrlPicker;
-using uComponents.DataTypes.UrlPicker.Dto;
+﻿using PG.UmbracoExtensions.Helpers.UrlPicker;
 using Umbraco;
 using Umbraco.Core.Models;
 using Umbraco.Core;
@@ -198,7 +196,6 @@ namespace PG.UmbracoExtensions.Helpers
         /// <summary>
         /// Gets the url picker url
         /// </summary>
-        /// <param name="urlPickerValue"></param>
         /// <returns></returns>
         public static Dictionary<string, string> GetMultiPickerUrl(this IPublishedContent node, string fieldAlias)
         {
