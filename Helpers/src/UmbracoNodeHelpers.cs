@@ -1,4 +1,5 @@
-﻿using PG.UmbracoExtensions.Helpers.UrlPicker;
+﻿using PG.UmbracoExtensions.Helpers.LegacyUrlPicker;
+using RJP.MultiUrlPicker.Models;
 using Umbraco;
 using Umbraco.Core.Models;
 using Umbraco.Core;
@@ -98,6 +99,7 @@ namespace PG.UmbracoExtensions.Helpers
         /// </summary>
         /// <param name="urlPickerValue"></param>
         /// <returns></returns>
+        [Obsolete("This is for legacy v6 url picker. Use extension method directly.")]
         public static String GetPickerUrl(String urlPickerValue)
         {
             String result = "";
@@ -162,7 +164,11 @@ namespace PG.UmbracoExtensions.Helpers
 
             if (node.HasProperty(fieldAlias))
             {
-                result = GetPickerUrl(node.GetPropertyValue<string>(fieldAlias));
+                var items = node.GetPropertyValue<MultiUrls>(fieldAlias);
+                if (items != null && items.Any())
+                {
+                    result = items.First().Url;
+                }
             }
 
             return result;
@@ -170,10 +176,11 @@ namespace PG.UmbracoExtensions.Helpers
 
         /// <summary>
         /// Gets the url picker url
-        /// NOTE: gets adds only links with title
+        /// NOTE: adds only links with title
         /// </summary>
         /// <param name="urlPickerValue"></param>
         /// <returns></returns>
+        [Obsolete("This is for legacy v6 Multi Url Picker")]
         public static Dictionary<string, string> GetMultiPickerUrl(String urlPickerValue)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();

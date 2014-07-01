@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PG.UmbracoExtensions.Helpers</RootNamespace>
     <AssemblyName>PG.UmbracoExtensions.Helpers</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\PG.UmbracoExtensions.Helpers.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="businesslogic">
@@ -40,7 +43,13 @@
     <Reference Include="interfaces">
       <HintPath>dependencies\interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>dependencies\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RJP.MultiUrlPicker">
+      <HintPath>dependencies\RJP.MultiUrlPicker.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
@@ -68,15 +77,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\GlobalHelpers.cs" />
     <Compile Include="src\ImageHelpers.cs" />
+    <Compile Include="src\LegacyUrlPicker\MultiPickerState.cs" />
+    <Compile Include="src\LegacyUrlPicker\UrlPickerEnum.cs" />
+    <Compile Include="src\LegacyUrlPicker\UrlPickerState.cs" />
     <Compile Include="src\MailHelper.cs" />
     <Compile Include="src\SortingHelper.cs" />
     <Compile Include="src\TagHelpers.cs" />
     <Compile Include="src\TemplateHelpers.cs" />
     <Compile Include="src\UmbracoHelperExtensions.cs" />
     <Compile Include="src\UmbracoNodeHelpers.cs" />
-    <Compile Include="src\UrlPicker\MultiPickerState.cs" />
-    <Compile Include="src\UrlPicker\UrlPickerEnum.cs" />
-    <Compile Include="src\UrlPicker\UrlPickerState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

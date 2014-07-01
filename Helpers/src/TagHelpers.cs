@@ -11,6 +11,7 @@ using Umbraco.Core.Models;
 using Umbraco.Web;
 using Umbraco;
 using Umbraco.Core.Services;
+using Tag = umbraco.cms.businesslogic.Tags.Tag;
 
 namespace PG.UmbracoExtensions.Helpers
 {

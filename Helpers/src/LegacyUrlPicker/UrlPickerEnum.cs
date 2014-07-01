@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PG.UmbracoExtensions.Helpers.UrlPicker
+namespace PG.UmbracoExtensions.Helpers.LegacyUrlPicker
 {
 
     /// <summary>

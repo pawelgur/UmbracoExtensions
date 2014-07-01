@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 
-namespace PG.UmbracoExtensions.Helpers.UrlPicker
+namespace PG.UmbracoExtensions.Helpers.LegacyUrlPicker
 {
     /// <summary>
     /// NOTE: taken from uComponents
