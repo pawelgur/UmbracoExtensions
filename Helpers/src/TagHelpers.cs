@@ -40,7 +40,7 @@ namespace PG.UmbracoExtensions.Helpers
                 //fill scoredList
                 foreach (var post in relatedPosts)
                 {
-                    if ((!String.IsNullOrEmpty(doctypeAlias) && post.ContentType.Text == doctypeAlias) || String.IsNullOrEmpty(doctypeAlias))
+                    if ((!String.IsNullOrEmpty(doctypeAlias) && post.ContentType.Alias == doctypeAlias) || String.IsNullOrEmpty(doctypeAlias))
                     {
                         var relatedNode = UmbracoContext.Current.ContentCache.GetById(post.Id);
 
