@@ -249,7 +249,7 @@ namespace PG.UmbracoExtensions.Helpers
 
             try
             {
-                result = umbraco.AssignedContentItem.AncestorOrSelf();
+                result = umbraco.AssignedContentItem.AncestorOrSelf(1);
             }
             catch (Exception e)
             {

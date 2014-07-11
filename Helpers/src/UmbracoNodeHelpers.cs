@@ -286,7 +286,7 @@ namespace PG.UmbracoExtensions.Helpers
         /// <returns></returns>
         public static string RelativeUrl(this IPublishedContent node)
         {
-            var rootNode = node.AncestorOrSelf();
+            var rootNode = node.AncestorOrSelf(1);
             var rootReplaceUrl = "/";
             
             //check if root node is included in url
