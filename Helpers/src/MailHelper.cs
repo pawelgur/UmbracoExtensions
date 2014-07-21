@@ -112,33 +112,42 @@ namespace PG.UmbracoExtensions.Helpers
             return false;
         }
 
-        
-        
+
         /// <summary>
-        /// Gets email recipients from root node by fieldName
-        /// NOTE: if current node from umbraco context is not available - gets first homepage with urlname "home"
+        /// Gets email recipients from root node by fieldName from Multi User Select field
+        /// 
+        /// NOTE: if current node from umbraco context is not available or context node not passed - gets first node with doctype containing "Homepage"
         /// TODO: get current culture homepage
         /// </summary>
         /// <param name="fieldName"></param>
+        /// <param name="contextNodeId">id of current page used to get current root node</param>
         /// <returns></returns>
-        public static IEnumerable<IUser> GetEmailRecipients(string fieldName)
+        [Obsolete("Multi User Select shouldn't be used for email lists.")]
+        public static IEnumerable<IUser> GetEmailRecipients(string fieldName, int contextNodeId = 0)
         {
             IEnumerable<IUser> result = new List<IUser>();
 
             var UmbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 
-            IPublishedContent rootNode = null;
+            IPublishedContent rootNode = contextNodeId == 0 
+                ? null 
+                : UmbracoContext.Current.ContentCache.GetById(contextNodeId);
 
-            try
+            rootNode = rootNode == null ? null : rootNode.AncestorOrSelf(1);
+
+            if (rootNode == null)
             {
-                rootNode = UmbracoHelper.AssignedContentItem;
+                try
+                {
+                    rootNode = UmbracoHelper.AssignedContentItem.AncestorOrSelf(1);
+                }
+                catch (Exception exc)
+                {
+                    //current node not available
+                    rootNode = UmbracoHelper.TypedContentAtRoot().FirstOrDefault(x => x.DocumentTypeAlias.Contains("Homepage"));
+                }
             }
-            catch (InvalidOperationException exc)
-            {
-                //current node not available
-                rootNode = UmbracoHelper.TypedContentAtRoot().FirstOrDefault(x => x.DocumentTypeAlias == "Site_Homepage");
-            }
-            
+
             result = rootNode.GetSelectedUsers(fieldName);
 
             return result;
