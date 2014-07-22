@@ -321,8 +321,46 @@ namespace PG.UmbracoExtensions.Helpers
 
             return result;
         }
-        
-        
+
+        /// <summary>
+        /// Creates Media item in specified Media path. Ex.: "/Site1/Category/Subfolder/"
+        /// </summary>
+        /// <param name="mediaService"></param>
+        /// <param name="path"></param>
+        /// <param name="name"></param>
+        /// <param name="mediaTypeAlias"></param>
+        /// <returns></returns>
+        public static IMedia CreateMedia(this IMediaService mediaService, string path, string name, string mediaTypeAlias)
+        {
+            var pathParts = path.Split(new [] {"/"}, StringSplitOptions.RemoveEmptyEntries);
+
+            var rootMedia = mediaService.GetRootMedia();
+
+            //get parent
+            var parentId = -1;
+            if (pathParts.Any())
+            {
+                var currentMedia = rootMedia;
+                foreach (var pathPart in pathParts)
+                {
+                    var currentFolder = currentMedia.FirstOrDefault(x => x.Name.ToLower() == pathPart.ToLower());
+                    if (currentFolder == null)
+                    {
+                        currentFolder = mediaService.CreateMedia(pathPart, parentId, "Folder");
+                        mediaService.Save(currentFolder);
+                    }
+                    parentId = currentFolder.Id;
+                    currentMedia = currentFolder.Children();
+                }
+            }
+
+            var mediaItem = mediaService.CreateMedia(name, parentId, mediaTypeAlias);
+            mediaService.Save(mediaItem);
+            
+            return mediaItem;
+        }
+
+
         /*******************************************************************************************/
         /*******************************************************************************************/
         /****************************   P R I V A T E  ********************************************/
