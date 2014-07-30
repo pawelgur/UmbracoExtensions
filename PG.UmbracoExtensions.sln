@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PG.UmbracoExtensions.Helper
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PG.UmbracoExtensions.CustomSectionHelpers", "CustomSectionHelpers\PG.UmbracoExtensions.CustomSectionHelpers.csproj", "{90FCE3C6-7A28-4617-90F4-DF1033DF7759}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PG.UmbracoExtensions.ClientApi", "ClientApi\PG.UmbracoExtensions.ClientApi.csproj", "{2109DCB0-B4FD-444C-9E44-3A009463B6F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{90FCE3C6-7A28-4617-90F4-DF1033DF7759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90FCE3C6-7A28-4617-90F4-DF1033DF7759}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90FCE3C6-7A28-4617-90F4-DF1033DF7759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2109DCB0-B4FD-444C-9E44-3A009463B6F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2109DCB0-B4FD-444C-9E44-3A009463B6F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2109DCB0-B4FD-444C-9E44-3A009463B6F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2109DCB0-B4FD-444C-9E44-3A009463B6F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

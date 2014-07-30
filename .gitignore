@@ -4,3 +4,5 @@
 /CustomSectionHelpers/bin
 /CustomSectionHelpers/obj
 *.user
+/ClientApi/bin
+/ClientApi/obj
