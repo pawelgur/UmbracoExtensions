@@ -343,7 +343,7 @@ namespace PG.UmbracoExtensions.Helpers
 
             if (node.HasValue(fieldAlias))
             {
-                var valueStr = node.GetProperty(fieldAlias).Value.ToString();
+                var valueStr = node.GetProperty(fieldAlias).DataValue.ToString();
                 result.AddRange(valueStr.ToIntList());
             }
 

@@ -54,15 +54,28 @@ namespace PG.UmbracoExtensions.ClientApi
         public static object MediaPicker(object value)
         {
             var url = "";
-            var valueStr = (string) value;
-            if (!String.IsNullOrEmpty(valueStr))
+
+            int mediaId = 0;
+
+            if (value is int)
             {
-                var mediaNode = umbracoHelper.TypedMedia(valueStr);
+                mediaId = (int) value;
+            }
+            else
+            {
+                var valueStr = (string)value;
+                int.TryParse(valueStr, out mediaId);
+            }
+            
+            if (mediaId > 0)
+            {
+                var mediaNode = umbracoHelper.TypedMedia(mediaId);
                 if (mediaNode != null && mediaNode.HasValue("umbracoFile"))
                 {
-                    url = mediaNode.Url;    
+                    url = mediaNode.Url;
                 }
             }
+
             return url;
         }
 

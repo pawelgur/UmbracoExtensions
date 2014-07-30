@@ -53,7 +53,7 @@ namespace PG.UmbracoExtensions.ClientApi
                     else if (node.HasValue(currentFieldAlias))
                     {
                         var value =
-                            ((string)node.GetProperty(currentFieldAlias).Value).Split(new char[] { ',' },
+                            ((string)node.GetProperty(currentFieldAlias).DataValue).Split(new char[] { ',' },
                                 StringSplitOptions.RemoveEmptyEntries)[0];
                         var umbracoHelper = new UmbracoHelper(UmbracoContext.Current, node);
                         targetNode = umbracoHelper.TypedContent(value);
@@ -139,10 +139,10 @@ namespace PG.UmbracoExtensions.ClientApi
                     result = TestInt(node.GetPropertyValue<int>(filter.fieldAlias), filter.value);
                     break;
                 case "Multi-Node Tree Picker":
-                    result = TestMultipleNodes((string)node.GetProperty(filter.fieldAlias).Value, filter.value);
+                    result = TestMultipleNodes((string)node.GetProperty(filter.fieldAlias).DataValue, filter.value);
                     break;
                 default:
-                    result = TestString((string)node.GetProperty(filter.fieldAlias).Value, filter.value); //GetProperty().Value won't trigger value converters -> gets raw id
+                    result = TestString((string)node.GetProperty(filter.fieldAlias).DataValue, filter.value); //GetProperty().DataValue won't trigger value converters -> gets raw id
                     break;
             }
 

@@ -69,11 +69,12 @@ namespace PG.UmbracoExtensions.ClientApi
                 if (node.HasProperty(sourcePropertyAlias))
                 {
                     var nodeProperty = node.GetProperty(sourcePropertyAlias);
+                    var nodePropertyValue = nodeProperty.DataValue; //raw value instead of typed one
 
                     switch (propertyOptions.propertyEditorName)
                     {
                         case "Media Picker":
-                            result[propertyAlias] = PropertyValueConverters.MediaPicker(nodeProperty.Value);
+                            result[propertyAlias] = PropertyValueConverters.MediaPicker(nodePropertyValue);
                             break;
                         case "Multi-Node Tree Picker":
                             if (recursive &&
@@ -84,40 +85,40 @@ namespace PG.UmbracoExtensions.ClientApi
                             }
                             else
                             {
-                                result[propertyAlias] = PropertyValueConverters.MultiNodePicker(nodeProperty.Value);
+                                result[propertyAlias] = PropertyValueConverters.MultiNodePicker(nodePropertyValue);
                             }
                             break;
                         case "Multi-Image Picker":
-                            result[propertyAlias] = PropertyValueConverters.MultiImagePicker(nodeProperty.Value);
+                            result[propertyAlias] = PropertyValueConverters.MultiImagePicker(nodePropertyValue);
                             break;
                         case "Multi-Url Picker":
-                            result[propertyAlias] = PropertyValueConverters.MultiUrlPicker(nodeProperty.Value);
+                            result[propertyAlias] = PropertyValueConverters.MultiUrlPicker(nodePropertyValue);
                             break;
                         case "Url Picker":
-                            result[propertyAlias] = PropertyValueConverters.UrlPicker(nodeProperty.Value);
+                            result[propertyAlias] = PropertyValueConverters.UrlPicker(nodePropertyValue);
                             break;
                         case "QR Code - Url Picker": //qr code from url picker field
                             if (propertyOptions.additionalOptions != null && propertyOptions.additionalOptions.ContainsKey("width") && propertyOptions.additionalOptions.ContainsKey("height"))
                             {
                                 var width = (int) propertyOptions.additionalOptions["width"];
                                 var height = (int)propertyOptions.additionalOptions["height"];
-                                result[propertyAlias] = PropertyValueConverters.QrCode(nodeProperty.Value, "Url Picker", width, height);
+                                result[propertyAlias] = PropertyValueConverters.QrCode(nodePropertyValue, "Url Picker", width, height);
                             }
                             else
                             {
-                                result[propertyAlias] = PropertyValueConverters.QrCode(nodeProperty.Value, "Url Picker");
+                                result[propertyAlias] = PropertyValueConverters.QrCode(nodePropertyValue, "Url Picker");
                             }
                             break;
                         case "File Download Url":
                             result[propertyAlias] = node.GetDownloadUrl();
                             break;
                         case "Boolean":
-                            result[propertyAlias] = PropertyValueConverters.Boolean(nodeProperty.Value);
+                            result[propertyAlias] = PropertyValueConverters.Boolean(nodePropertyValue);
                             break;
                         //App-specific: creative format standard values
                         case "Creative Format Standard Value":
                             result[propertyAlias] =
-                                PropertyValueConverters.CreativeFormatStandardValue(nodeProperty.Value,
+                                PropertyValueConverters.CreativeFormatStandardValue(nodePropertyValue,
                                     sourcePropertyAlias, node);
                             break;
                         //App-specific: creative format publisher name
@@ -126,7 +127,7 @@ namespace PG.UmbracoExtensions.ClientApi
                                 PropertyValueConverters.CreativeFormatPublisherName(node);
                             break;
                         default:
-                            result[propertyAlias] = PropertyValueConverters.DefaultConverter(nodeProperty.Value);
+                            result[propertyAlias] = PropertyValueConverters.DefaultConverter(nodePropertyValue);
                             break;
                     }
                 }

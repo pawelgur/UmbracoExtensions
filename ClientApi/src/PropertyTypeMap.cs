@@ -54,6 +54,7 @@ namespace PG.UmbracoExtensions.ClientApi
                         case "Presenter Picker":    //this should be in siteUmbraco specific config file
                         case "Creative Channel Node Picker": //this should be in creative specific config file
                         case "Creative Format Type Picker":  //this should be in creative specific config file
+                        case "Creative Format Picker":  //this should be in creative specific config file
                             properties[propertyType.Alias] = new PropertyOptions("Multi-Node Tree Picker");
                             if (doctype.Alias == "Site_CreativeSpacePost")
                             {
