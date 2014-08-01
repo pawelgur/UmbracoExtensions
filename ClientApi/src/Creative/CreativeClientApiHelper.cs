@@ -31,9 +31,13 @@ namespace PG.UmbracoExtensions.ClientApi.Creative
                         var channels = GetPublisherFormatsFieldIds(node, "channelId");
                         result = TestMultipleIds(filter.value, channels);
                         break;
-                    case "formatTypes":
-                        var formatTypes = GetPublisherFormatsFieldIds(node, "formatType");
-                        result = TestMultipleIds(filter.value, formatTypes);
+                    case "devices":
+                        var devices = GetPublisherFormatsFieldIds(node, "formatType");
+                        result = TestMultipleIds(filter.value, devices);
+                        break;
+                    case "types":
+                        var types = GetPublisherFormatsFieldIds(node, "typeNew");
+                        result = TestMultipleIds(filter.value, types);
                         break;
                     case "standardFormatCategories":
                         var standardCategories = GetPublisherStandardCategoriesIds(node);
