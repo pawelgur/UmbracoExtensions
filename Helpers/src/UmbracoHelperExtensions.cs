@@ -77,26 +77,6 @@ namespace PG.UmbracoExtensions.Helpers
 
         #region ImageHelpers
 
-        public static String GetThumbnailUrl(this IPublishedContent post, String cropName = "", bool cropThumb = false) 
-        {
-            return ImageHelpers.GetThumbnailUrl(post, cropName, cropThumb);
-        }
-
-        public static String GetImageUrl(this IPublishedContent post, String cropName = "", String fieldAlias = "image")
-        {
-            return ImageHelpers.GetImageUrl(post, cropName, fieldAlias);
-        }
-
-        public static IEnumerable<String> GetImagesUrl(this IPublishedContent post, String cropName = "", String fieldAlias = "images")
-        {
-            return ImageHelpers.GetImagesUrl(post, cropName, fieldAlias);
-        }
-
-        public static String GetCrop(this UmbracoHelper umbraco, String cropperValue, String croppName)
-        {
-            return ImageHelpers.GetCrop(cropperValue, croppName);
-        }
-
         public static String GetQrCodeUrl(this UmbracoHelper umbraco, String dataToEncode, int width, int height) 
         {
             return ImageHelpers.GetQrCodeUrl(dataToEncode, width, height);

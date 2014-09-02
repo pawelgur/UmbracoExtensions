@@ -1,4 +1,5 @@
-﻿using Umbraco;
+﻿using Newtonsoft.Json.Linq;
+using Umbraco;
 using Umbraco.Core.Models;
 using Umbraco.Core;
 using Umbraco.Core.Services;
@@ -21,71 +22,63 @@ namespace PG.UmbracoExtensions.Helpers
         static HttpServerUtility Server = HttpContext.Current.Server;
         static IMediaService MediaService = ApplicationContext.Current.Services.MediaService;
 
-        /// <summary>
-        /// Gets thumbnail url. 
-        /// Checks if thumbnail is defined in post, if not - returns crop of main image, if it is absent - default thumbnail image crop.
-        /// 
-        ///     Priority: 1.Thumbnail 2.Image 3.Default site thumbnail
-        /// 
-        /// TODO: rewrite for v7 - crops, better Value Converters implementation, etc.
-        /// TODO: checking for crops and creating files from coordinates
-        /// </summary>
-        /// <param name="post"></param>
-        /// <param name="cropName"></param>
-        /// <param name="cropThumb">use thumbnail crop if set to true</param>
-        /// <returns>thumbnail url</returns>
-        public static String GetThumbnailUrl(IPublishedContent post, String cropName = "", bool cropThumb = false)
+
+
+        public static string GetThumbnailUrl(this IPublishedContent node, string cropName = "")
         {
-            String result = "";
-            
+            return GetImageFieldUrl(node, "thumbnail");
+        }
+
+
+        public static string GetImageUrl(this IPublishedContent node, string cropName = "")
+        {
+            return GetImageFieldUrl(node, "image", cropName);
+        }
+
+
+        /// <summary>
+        /// Gets specified dimensions crop url
+        /// </summary>
+        public static string GetImageUrl(this IPublishedContent node, int cropWidth, int cropHeight, string fieldAlias = "image")
+        {
+            var result = "";
+
+            if (node.HasValue(fieldAlias))
+            {
+                var mediaItem = GetMediaItem(node, fieldAlias);
+
+                result = mediaItem.GetCropUrl(width: cropWidth, height: cropHeight);
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Gets images url list.
+        /// 
+        /// Gets crops if cropname specified
+        /// </summary>
+        public static IEnumerable<string> GetImagesUrl(IPublishedContent post, string cropName = "", string fieldAlias = "images")
+        {
+            List<string> result = new List<string>();
+
             var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 
             try
             {
-                var thumbnailID = GetIdStr(post, "thumbnail");
-                if (string.IsNullOrEmpty(thumbnailID))
+                var pictureIDsVal = post.GetPropertyValue<string>(fieldAlias);
+                if (!String.IsNullOrEmpty(pictureIDsVal))
                 {
-                    //no thumbnail
-                    var pictureID = GetIdStr(post, "image");
-                    if (!string.IsNullOrEmpty(pictureID))
+                    var pictureIDs = pictureIDsVal.Split(new [] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var pictureIDstr in pictureIDs)
                     {
-                        var picture = umbracoHelper.Media(pictureID);
-                        if (cropName != "")
+                        if (!String.IsNullOrEmpty(pictureIDstr))
                         {
-                            var thumbnail = picture.AsDynamic().imageCropper.crops.Find("@name", cropName);
-                            result = thumbnail.url;
+                            int id = Int32.Parse(pictureIDstr);
+                            var url = GetImageUrl(id, cropName);
+                            result.Add(url);
                         }
-
-                    }
-                    else
-                    {
-                        //return default thumb
-                        IMediaService mediaService = ApplicationContext.Current.Services.MediaService;
-                        IEnumerable<IMedia> buffer = mediaService.GetByLevel(1).Where(x => x.Name == "Default");
-                        if (buffer.Any())
-                        {
-                            IMedia defaultFolder = buffer.First();
-                            buffer = mediaService.GetChildren(defaultFolder.Id);
-                            if (buffer.Any())
-                            {
-                                buffer = buffer.Where(x => x.Name == "default-thumbnail");
-                                if (buffer.Any() && cropName != "")
-                                {
-                                    IMedia defaultThumb = buffer.First();
-                                    result = GetCrop(defaultThumb.GetValue<String>("imageCropper"), cropName);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    var thumbnail = umbracoHelper.Media(thumbnailID);
-                    result = thumbnail.Url;
-                    if (cropThumb && cropName != "")
-                    {
-                        thumbnail = thumbnail.AsDynamic().imageCropper.crops.Find("@name", cropName);
-                        result = thumbnail.url;
                     }
 
                 }
@@ -97,100 +90,6 @@ namespace PG.UmbracoExtensions.Helpers
                     //throw e;
                 }
             }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets main image url.
-        /// 
-        /// Gets crop if cropname specified
-        /// 
-        /// TODO: rewrite for v7 - crops, better Value Converters implementation, etc.
-        /// </summary>
-        /// <param name="post"></param>
-        /// <param name="cropName"></param>
-        /// <param name="fieldAlias"></param>
-        /// <returns></returns>
-        public static String GetImageUrl(IPublishedContent post, String cropName = "", String fieldAlias = "image")
-        {
-            String result = "";
-
-            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-
-            try
-            {
-                var pictureID = GetIdStr(post, "image");
-                
-                if (!string.IsNullOrEmpty(pictureID))
-                {
-                    int id = Int32.Parse(pictureID);
-                    result = GetImageUrl(id, cropName);
-                }
-
-            }
-            catch (Exception e)
-            {
-                if (UmbracoContext.Current.IsDebug)
-                {
-                    //throw e;
-                }
-            }
-
-            return result;
-        }
-
-            /// <summary>
-            /// WORKAROUND for "Umbraco Core Property Value Converters" package (returns IPublishedContent for media picker)
-            /// TODO: delete this
-            /// </summary>
-            /// <param name="node"></param>
-            /// <param name="propertyAlias"></param>
-            /// <returns></returns>
-            private static string GetIdStr(IPublishedContent node, string propertyAlias)
-            {
-                var result = "";
-            
-                var propertyValue = node.GetPropertyValue(propertyAlias);
-                if (propertyValue != null)
-                {
-                    if (propertyValue is IPublishedContent)
-                    {
-                        result = ((IPublishedContent) propertyValue).Id.ToString();
-                    }
-                    else
-                    {
-                        result = propertyValue.ToString();
-                    }
-                }
-
-                return result;
-            }
-
-        /// <summary>
-        /// Gets the specified crop from ImageCropper string value
-        /// </summary>
-        /// <param name="cropperValue"></param>
-        /// <param name="croppName"></param>
-        /// <returns></returns>
-        public static String GetCrop(String cropperValue, String croppName)
-        {
-            String result = "";
-
-            System.Xml.Linq.XDocument xmlDoc = System.Xml.Linq.XDocument.Parse(cropperValue);
-
-            var queryResult = from crop in xmlDoc.Descendants("crop")
-                              where (string)crop.Attribute("name") == croppName
-                              select new
-                              {
-                                  url = (string)crop.Attribute("url")
-                              };
-            foreach (var t in queryResult)
-            {
-                result = t.url;
-                break;
-            }
-
 
             return result;
         }
@@ -200,10 +99,6 @@ namespace PG.UmbracoExtensions.Helpers
         /// Creates QR code using Google chart api.
         /// Returns url of created qr code.
         /// </summary>
-        /// <param name="dataToEncode"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
         public static String GetQrCodeUrl(String dataToEncode, int width, int height)
         {
             String result = "";
@@ -281,75 +176,106 @@ namespace PG.UmbracoExtensions.Helpers
             return result;
         }
 
-        /// <summary>
-        /// Gets images url list.
-        /// 
-        /// Gets crops if cropname specified
-        /// </summary>
-        /// <param name="post"></param>
-        /// <param name="cropName"></param>
-        /// <param name="fieldAlias"></param>
-        /// <returns></returns>
-        public static IEnumerable<String> GetImagesUrl(IPublishedContent post, String cropName = "", String fieldAlias = "images")
+        
+
+        #region HelperMethods
+
+
+        static string GetImageFieldUrl(IPublishedContent node, string fieldAlias, string cropName = "")
         {
-            List<string> result = new List<string>();
+            var result = "";
 
-            var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
-
-            try
+            if (node.HasValue(fieldAlias))
             {
-                var pictureIDsVal = post.GetPropertyValue<String>(fieldAlias);
-                if (!String.IsNullOrEmpty(pictureIDsVal))
-                {
-                    var pictureIDs = pictureIDsVal.Split(new string[] {","}, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var pictureIDstr in pictureIDs)
-                    {
-                        if (!String.IsNullOrEmpty(pictureIDstr))
-                        {
-                            int id = Int32.Parse(pictureIDstr);
-                            var url = GetImageUrl(id, cropName);
-                            result.Add(url);
-                        }
-                    }
+                var mediaItem = GetMediaItem(node, fieldAlias);
 
-                }
+                result = String.IsNullOrEmpty(cropName)
+                    ? GetFileUrl(mediaItem)
+                    : mediaItem.GetCropUrl("umbracoFile", cropName);
             }
-            catch (Exception e)
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// WORKAROUND for "Umbraco Core Property Value Converters" package (returns IPublishedContent for media picker)
+        /// 
+        /// Note: this will not be needed when Value Converters will be incorporated to core
+        /// </summary>
+        static IPublishedContent GetMediaItem(IPublishedContent node, string fieldAlias)
+        {
+            IPublishedContent result = null;
+
+            var propertyValue = node.GetPropertyValue(fieldAlias);
+            if (propertyValue != null)
             {
-                if (UmbracoContext.Current.IsDebug)
+                if (propertyValue is IPublishedContent)
                 {
-                    //throw e;
+                    result = (IPublishedContent)propertyValue;
+                }
+                else
+                {
+                    var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
+                    result = umbracoHelper.TypedMedia(propertyValue);
                 }
             }
 
             return result;
         }
 
+
+        /// <summary>
+        /// Gets "umbracoFile" as string url. Works both with default file upload and handles Image Cropper format values.
+        /// </summary>
+        public static string GetFileUrl(IPublishedContent mediaItem)
+        {
+            var result = "";
+
+            var value = mediaItem.GetPropertyValue("umbracoFile");  //WARNING: for file upload "umbracoFile" stores file url, for image cropper it is custom object
+
+            if (value is JObject)
+            {
+                var cropInfo = (JObject)value;
+                result = cropInfo.GetValue("src").ToString();
+            }
+            else
+            {
+                result = value.ToString();
+            }
+
+            return result;
+        }
+
+
         /// <summary>
         /// Gets image url by its id
         /// </summary>
-        /// <param name="pictureID"></param>
+        /// <param name="mediaId"></param>
         /// <param name="cropName"></param>
         /// <returns></returns>
-        public static string GetImageUrl(int pictureID, string cropName = "")
+        public static string GetImageUrl(int mediaId, string cropName = "")
         {
             var result = "";
 
             var umbracoHelper = new UmbracoHelper(UmbracoContext.Current);
 
-            var picture = umbracoHelper.TypedMedia(pictureID);
-            if (picture != null)
+            var mediaItem = umbracoHelper.TypedMedia(mediaId);
+            if (mediaItem != null)
             {
-                result = picture.GetPropertyValue<String>("umbracoFile");
-                if (cropName != "")
-                {
-                    var crop = picture.AsDynamic().imageCropper.crops.Find("@name", cropName);
-                    result = crop.url;
-                }
+                result = String.IsNullOrEmpty(cropName)
+                    ? GetFileUrl(mediaItem)
+                    : mediaItem.GetCropUrl("umbracoFile", cropName);
             }
 
             return result;
         }
+
+
+
+        #endregion
+
+
         
     }
 }
