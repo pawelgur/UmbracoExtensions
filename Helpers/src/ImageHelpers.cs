@@ -26,7 +26,7 @@ namespace PG.UmbracoExtensions.Helpers
 
         public static string GetThumbnailUrl(this IPublishedContent node, string cropName = "")
         {
-            return GetImageFieldUrl(node, "thumbnail");
+            return GetImageFieldUrl(node, "thumbnail", cropName);
         }
 
 
