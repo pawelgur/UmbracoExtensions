@@ -84,6 +84,32 @@ namespace PG.UmbracoExtensions.Helpers
             }
 
             return result.Take(limit);
-        } 
+        }
+
+        /// <summary>
+        /// Gets tagged IPublishedContent list. 
+        /// </summary>
+        public static IEnumerable<IPublishedContent> GetPublishedContentByTag(this ITagService tagService, string tagValue, string doctypeAlias = "", string tagGroup = null)
+        {
+            var result = new List<IPublishedContent>();
+
+            if (!String.IsNullOrEmpty(tagValue))
+            {
+                var taggedContent = tagService.GetTaggedContentByTag(tagValue, tagGroup);
+                
+                foreach (var taggedEntity in taggedContent)
+                {
+                    var node = UmbracoContext.Current.ContentCache.GetById(taggedEntity.EntityId);
+
+                    if (node != null && ((!String.IsNullOrEmpty(doctypeAlias) && node.DocumentTypeAlias == doctypeAlias) || String.IsNullOrEmpty(doctypeAlias)))
+                    {
+                        result.Add(node);
+                    }
+                }
+            }
+
+            return result;
+        }
+    
     }
 }
