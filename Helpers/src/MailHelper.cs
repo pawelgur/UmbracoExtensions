@@ -102,6 +102,9 @@ namespace PG.UmbracoExtensions.Helpers
                 var smtpClient = new System.Net.Mail.SmtpClient();
 
                 smtpClient.Send(mailMsg);
+
+                LogHelper.Info(typeof(MailHelper), String.Format("Email sent successfuly. || Subject: {0} || Recipients: {1}", subject, String.Join(", ", recipients)));
+
                 return true;
             }
             catch (Exception ex)
