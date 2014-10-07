@@ -47,7 +47,10 @@ namespace PG.UmbracoExtensions.Helpers
             {
                 var mediaItem = GetMediaItem(node, fieldAlias);
 
-                result = mediaItem.GetCropUrl(width: cropWidth, height: cropHeight);
+                if (mediaItem != null)
+                {
+                    result = mediaItem.GetCropUrl(width: cropWidth, height: cropHeight);    
+                }
             }
 
             return result;
@@ -189,9 +192,12 @@ namespace PG.UmbracoExtensions.Helpers
             {
                 var mediaItem = GetMediaItem(node, fieldAlias);
 
-                result = String.IsNullOrEmpty(cropName)
-                    ? GetFileUrl(mediaItem)
-                    : mediaItem.GetCropUrl("umbracoFile", cropName);
+                if (mediaItem != null)
+                {
+                    result = String.IsNullOrEmpty(cropName)
+                        ? GetFileUrl(mediaItem)
+                        : mediaItem.GetCropUrl("umbracoFile", cropName);
+                }
             }
 
             return result;
