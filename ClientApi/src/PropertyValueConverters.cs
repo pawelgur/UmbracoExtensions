@@ -170,7 +170,8 @@ namespace PG.UmbracoExtensions.ClientApi
                 {
                     case "Url Picker":
                         var targetUrl = uComponents.DataTypes.UrlPicker.Dto.UrlPickerState.Deserialize(valueStr).Url;
-                        result = targetUrl.Trim() == "" ? "" : ImageHelpers.GetQrCodeUrl(targetUrl, width, height);
+
+                        result = targetUrl.Trim() == "" ? "" : ImageHelpers.GetQrCodeUrl(GlobalHelpers.GetAbsoluteUrl(targetUrl), width, height);
                         break;
                     default:
                         result = ImageHelpers.GetQrCodeUrl(valueStr, width, height);

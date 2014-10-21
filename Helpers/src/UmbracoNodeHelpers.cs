@@ -131,6 +131,25 @@ namespace PG.UmbracoExtensions.Helpers
         }
 
         /// <summary>
+        /// Gets url picker url and checks the url
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="fieldAlias"></param>
+        /// <returns></returns>
+        public static string GetPickerAbsoluteUrl(this IPublishedContent node, string fieldAlias)
+        {
+            string result = "";
+
+            if (node.HasProperty(fieldAlias))
+            {
+                result = GetPickerUrl(node.GetPropertyValue<string>(fieldAlias));
+                result = GlobalHelpers.GetAbsoluteUrl(result);
+            }
+            return result;
+        }
+
+
+        /// <summary>
         /// Gets content node from url picker
         /// </summary>
         /// <param name="node"></param>

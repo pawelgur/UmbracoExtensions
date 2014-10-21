@@ -321,8 +321,45 @@ namespace PG.UmbracoExtensions.Helpers
 
             return result;
         }
-        
-        
+
+
+        /// <summary>
+        /// Returns absolute Url
+        /// </summary>
+        /// <returns></returns>
+        public static string GetAbsoluteUrl(string relativeUrl, IPublishedContent node = null)
+        {
+            var result = relativeUrl;
+
+            if (!String.IsNullOrEmpty(relativeUrl))
+            {
+                var isRelative = String.IsNullOrEmpty(Regex.Match(result, "^(http|https|ftp|)://").Value);
+
+                if (isRelative && String.IsNullOrEmpty(relativeUrl))
+                {
+                    var domainPart = "";
+                    if (node != null)
+                    {
+                        domainPart = library.NiceUrlWithDomain(node.AncestorOrSelf(1).Id);
+                    }
+                    else
+                    {
+                        var host = HttpContext.Current.Request.Url.Host;
+                        var protocol = HttpContext.Current.Request.Url.Scheme;
+                        domainPart = protocol + "://" + host;
+                    }
+                    domainPart = (new Regex("/$")).Replace(domainPart, "");
+                    relativeUrl = (new Regex("^/")).Replace(relativeUrl, "");
+                    result = domainPart + "/" + relativeUrl;
+                }
+            }
+
+            
+
+            return result;
+        }
+
+
         /*******************************************************************************************/
         /*******************************************************************************************/
         /****************************   P R I V A T E  ********************************************/
